@@ -48,3 +48,17 @@ resource "aws_api_gateway_integration" "get_integration" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.get_posts.invoke_arn
 }
+
+resource "aws_api_gateway_deployment" "prod_deployment" {
+  depends_on = [
+    aws_api_gateway_integration.post_integration,
+    aws_api_gateway_integration.get_integration,
+  ]
+
+  rest_api_id = aws_api_gateway_rest_api.posts_api.id
+  stage_name  = "prod"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
