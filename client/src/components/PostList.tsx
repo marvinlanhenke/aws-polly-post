@@ -12,7 +12,12 @@ export const PostList: React.FC = () => {
     try {
       const response = await getPosts();
       console.log(response);
-      setPosts(response.data.items);
+      const items: GetPostData[] = response.data.items;
+      items.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+      setPosts(items);
     } catch (err: any) {
       console.error(err);
     }
@@ -43,6 +48,9 @@ export const PostList: React.FC = () => {
             </th>
             <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
               Audio File
+            </th>
+            <th className="px-6 py-3 border-b text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
+              Created At
             </th>
           </tr>
         </thead>
@@ -85,6 +93,7 @@ export const PostList: React.FC = () => {
                     <span className="text-gray-500">N/A</span>
                   )}
                 </td>
+                <td>{post.createdAt}</td>
               </tr>
             ))
           ) : (

@@ -20,6 +20,7 @@ export interface GetPostData {
   text: string;
   url: string;
   voice: string;
+  createdAt: string;
 }
 
 export const createPost = (data: PostFormData) => api.post("/v1/posts", data);
