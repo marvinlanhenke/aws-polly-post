@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 
 import boto3
 
@@ -9,13 +10,17 @@ sns = boto3.client("sns")
 
 def lambda_handler(event, context):
     record_id = str(uuid.uuid4())
-    voice = event.get("voice")
-    text = event.get("text")
+
+    body = json.loads(event["body"])
+    voice = body.get("voice")
+    text = body.get("text")
 
     if not voice or not text:
         return {
             "statusCode": 400,
-            "error": "You must provide a valid 'voice' and 'text'",
+            "body": json.dumps({
+                "message": "You must provide a valid 'voice' and 'text'"
+            }),
         }
 
     print(
@@ -37,8 +42,14 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": {"message": "Successfully created a new post", "id": record_id},
+            "body": json.dumps({
+                "message": "Successfully created a new post",
+                "id": record_id,
+            }),
         }
     except Exception as e:
         print(e)
-        return {"statusCode": 500, "error": "InternalServerError"}
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"message": "InternalServerError"}),
+        }
