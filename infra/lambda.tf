@@ -19,8 +19,8 @@ resource "aws_lambda_function" "new_posts" {
 
   environment {
     variables = {
-      SNS_TOPIC     = "${aws_sns_topic.aws_polly_post_new_posts.name}"
-      DB_TABLE_NAME = "${aws_dynamodb_table.aws_polly_post_posts.name}"
+      SNS_TOPIC_ARN = "${aws_sns_topic.aws_polly_post_new_posts.arn}"
+      DB_TABLE_NAME = "${aws_dynamodb_table.aws_polly_post_posts.arn}"
     }
   }
 }
