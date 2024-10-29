@@ -11,7 +11,6 @@ export const PostList: React.FC = () => {
   const fetchPosts = async () => {
     try {
       const response = await getPosts();
-      console.log(response);
       const items: GetPostData[] = response.data.items;
       items.sort(
         (a, b) =>
