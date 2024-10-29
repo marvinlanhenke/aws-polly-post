@@ -16,6 +16,13 @@ resource "aws_lambda_function" "new_posts" {
   source_code_hash = data.archive_file.archive_new_posts.output_base64sha256
   runtime          = "python3.12"
   handler          = "new_posts.lambda_handler"
+
+  environment {
+    variables = {
+      SNS_TOPIC     = "${aws_sns_topic.aws_polly_post_new_posts.name}"
+      DB_TABLE_NAME = "${aws_dynamodb_table.aws_polly_post_posts.name}"
+    }
+  }
 }
 
 resource "null_resource" "sam_metadata_aws_lambda_function_new_posts" {
