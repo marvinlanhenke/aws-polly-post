@@ -44,7 +44,7 @@ resource "aws_api_gateway_integration" "get_integration" {
   resource_id = aws_api_gateway_resource.posts.id
   http_method = aws_api_gateway_method.get_method.http_method
 
-  integration_http_method = "GET"
+  integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.get_posts.invoke_arn
 }

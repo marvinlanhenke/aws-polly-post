@@ -98,7 +98,7 @@ resource "aws_lambda_function" "get_posts" {
 }
 
 resource "aws_lambda_permission" "allow_api_gateway_get" {
-  statement_id  = "AllowAPIGatewayInvokePost"
+  statement_id  = "AllowAPIGatewayInvokeGet"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_posts.function_name
   principal     = "apigateway.amazonaws.com"
