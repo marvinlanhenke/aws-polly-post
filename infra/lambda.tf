@@ -33,3 +33,34 @@ resource "null_resource" "sam_metadata_aws_lambda_function_new_posts" {
     built_output_path    = "${path.module}/../server/build/new_posts.zip"
   }
 }
+
+data "archive_file" "archive_convert_to_audio" {
+  type        = "zip"
+  source_file = "${path.module}/../server/convert_to_audio.py"
+  output_path = "${path.module}/../server/build/convert_to_audio.zip"
+}
+
+resource "aws_lambda_function" "convert_to_audio" {
+  filename         = "${path.module}/../server/build/convert_to_audio.zip"
+  function_name    = "convert_to_audio"
+  role             = aws_iam_role.iam_for_lamba.arn
+  source_code_hash = data.archive_file.archive_convert_to_audio.output_base64sha256
+  runtime          = "python3.12"
+  handler          = "convert_to_audio.lambda_handler"
+
+  environment {
+    variables = {
+      BUCKET_NAME   = "${aws_s3_bucket.aws_polly_post_audiofiles.bucket}"
+      DB_TABLE_NAME = "${aws_dynamodb_table.aws_polly_post_posts.arn}"
+    }
+  }
+}
+
+resource "null_resource" "sam_metadata_aws_lambda_function_convert_to_audio" {
+  triggers = {
+    resource_name        = "aws_lambda_function.convert_to_audio"
+    resource_type        = "ZIP_LAMBDA_FUNCTION"
+    original_source_code = "${path.module}/../server"
+    built_output_path    = "${path.module}/../server/build/convert_to_audio.zip"
+  }
+}
