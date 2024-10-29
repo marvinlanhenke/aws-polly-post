@@ -42,7 +42,7 @@ def lambda_handler(event, context):
         sns.publish(TopicArn=os.environ["SNS_TOPIC_ARN"], Message=record_id)
 
         return {
-            "statusCode": 200,
+            "statusCode": 201,
             "headers": {"Access-Control-Allow-Origin": "*"},
             "body": json.dumps({
                 "message": "Successfully created a new post",
