@@ -5,7 +5,7 @@ import json
 import boto3
 from datetime import datetime
 
-dynamodb = boto3.client("dynamodb")
+dynamodb = boto3.resource("dynamodb")
 sns = boto3.client("sns")
 
 
@@ -32,14 +32,14 @@ def lambda_handler(event, context):
     try:
         # TODO: use resource api
         createdAt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        dynamodb.put_item(
-            TableName=os.environ["DB_TABLE_NAME"],
+        table = dynamodb.Table(os.environ["DB_TABLE_NAME"])  # type: ignore
+        table.put_item(
             Item={
-                "id": {"S": record_id},
-                "text": {"S": text},
-                "voice": {"S": voice},
-                "status": {"S": "PROCESSING"},
-                "createdAt": {"S": createdAt},
+                "id": record_id,
+                "text": text,
+                "voice": voice,
+                "status": "PROCESSING",
+                "createdAt": createdAt,
             },
         )
 
