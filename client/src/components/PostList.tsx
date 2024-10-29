@@ -81,13 +81,19 @@ export const PostList: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap border-b">
                   {post.status === "UPDATED" ? (
-                    <a
-                      href={post.url}
-                      download={`post-${post.id}.mp3`}
-                      className="text-blue-500 hover:underline"
-                    >
-                      Download Audio
-                    </a>
+                    <div className="text-center">
+                      <audio controls className="w-full mt-2">
+                        <source src={post.url} type="audio/mpeg" />
+                        Your browser does not support the audio element
+                      </audio>
+                      <a
+                        href={post.url}
+                        download={`post-${post.id}.mp3`}
+                        className="text-blue-500 hover:underline"
+                      >
+                        Download Audio
+                      </a>
+                    </div>
                   ) : (
                     <span className="text-gray-500">N/A</span>
                   )}
