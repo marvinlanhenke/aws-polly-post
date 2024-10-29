@@ -18,3 +18,13 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution_policy" {
   role       = aws_iam_role.iam_for_lamba.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_policy" {
+  role       = aws_iam_role.iam_for_lamba.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sns_policy" {
+  role       = aws_iam_role.iam_for_lamba.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+}
