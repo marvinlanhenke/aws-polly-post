@@ -20,6 +20,14 @@ resource "aws_lambda_function" "new_posts" {
   }
 }
 
+resource "aws_lambda_permission" "allow_api_gateway_post" {
+  statement_id  = "AllowAPIGatewayInvokePost"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.new_posts.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.posts_api.execution_arn}/*/POST/v1/posts"
+}
+
 resource "null_resource" "sam_metadata_aws_lambda_function_new_posts" {
   triggers = {
     resource_name        = "aws_lambda_function.new_posts"
@@ -87,6 +95,14 @@ resource "aws_lambda_function" "get_posts" {
       DB_TABLE_NAME = "${aws_dynamodb_table.aws_polly_post_posts.arn}"
     }
   }
+}
+
+resource "aws_lambda_permission" "allow_api_gateway_get" {
+  statement_id  = "AllowAPIGatewayInvokePost"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_posts.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.posts_api.execution_arn}/*/GET/v1/posts"
 }
 
 resource "null_resource" "sam_metadata_aws_lambda_function_get_posts" {
