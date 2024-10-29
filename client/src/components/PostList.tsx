@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GetPostData, getPosts } from "../api/api";
+import { ArrowPathIcon } from "@heroicons/react/16/solid";
 
 export const PostList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,13 +34,13 @@ export const PostList: React.FC = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="overflow-x-auto">
-      <button
+    <div className="overflow-x-auto mx-10 shadow-md">
+      <ArrowPathIcon
         onClick={() => fetchPosts()}
-        className="my-2 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        className="w-12 h-12 my-2 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:cursor-pointer hover:shadow-md"
       >
-        Fetch Posts
-      </button>
+        Reload
+      </ArrowPathIcon>
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr>

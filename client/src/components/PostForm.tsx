@@ -22,7 +22,9 @@ export const PostForm: React.FC = () => {
 
     try {
       await createPost(data);
-      setSuccess("Post added successfully!");
+      setSuccess(
+        "Post added successfully! Your audio will soon be ready! Hit reload!",
+      );
       setText("");
       setTimeout(() => setSuccess(""), 1000);
     } catch (err: any) {
