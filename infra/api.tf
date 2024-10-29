@@ -116,3 +116,8 @@ resource "aws_api_gateway_deployment" "prod_deployment" {
     create_before_destroy = true
   }
 }
+
+output "api_url" {
+  description = "The URL of the API Gateway"
+  value       = aws_api_gateway_deployment.prod_deployment.invoke_url
+}
