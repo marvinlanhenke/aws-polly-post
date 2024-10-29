@@ -18,12 +18,6 @@ def lambda_handler(event, context):
     if not voice or not text:
         return {
             "statusCode": 400,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            },
             "body": json.dumps({
                 "message": "You must provide a valid 'voice' and 'text'"
             }),
@@ -48,12 +42,6 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            },
             "body": json.dumps({
                 "message": "Successfully created a new post",
                 "id": record_id,
@@ -63,11 +51,5 @@ def lambda_handler(event, context):
         print(e)
         return {
             "statusCode": 500,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            },
             "body": json.dumps({"message": "InternalServerError"}),
         }
