@@ -56,6 +56,14 @@ resource "aws_lambda_function" "convert_to_audio" {
   }
 }
 
+resource "aws_lambda_permission" "allow_sns_invoke" {
+  statement_id  = "AllowExecutionFromSNS"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.convert_to_audio.function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.aws_polly_post_new_posts.arn
+}
+
 resource "null_resource" "sam_metadata_aws_lambda_function_convert_to_audio" {
   triggers = {
     resource_name        = "aws_lambda_function.convert_to_audio"
