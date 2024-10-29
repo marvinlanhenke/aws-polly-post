@@ -14,4 +14,13 @@ export interface PostFormData {
   voice: string;
 }
 
+export interface GetPostData {
+  id: string;
+  status: string;
+  text: string;
+  url: string;
+  voice: string;
+}
+
 export const createPost = (data: PostFormData) => api.post("/v1/posts", data);
+export const getPosts = () => api.get("/v1/posts");
