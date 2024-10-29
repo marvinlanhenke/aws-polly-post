@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { GetPostData, getPosts } from "../api/api";
 
 export const PostList: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [posts, setPosts] = useState<GetPostData[]>([]);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     fetchPosts();
@@ -10,6 +12,8 @@ export const PostList: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
+      setLoading(true);
+      setError("");
       const response = await getPosts();
       const items: GetPostData[] = response.data.items;
       items.sort(
@@ -19,8 +23,14 @@ export const PostList: React.FC = () => {
       setPosts(items);
     } catch (err: any) {
       console.error(err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <div className="overflow-x-auto">

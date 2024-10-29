@@ -2,6 +2,7 @@ import React, { FormEvent, useState } from "react";
 import { createPost, PostFormData } from "../api/api";
 
 export const PostForm: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [voice, setVoice] = useState<string>("Joanna");
   const [error, setError] = useState<string>("");
@@ -10,6 +11,7 @@ export const PostForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setLoading(true);
     setSuccess("");
     setError("");
 
@@ -21,16 +23,25 @@ export const PostForm: React.FC = () => {
     try {
       await createPost(data);
       setSuccess("Post added successfully!");
+      setText("");
       setTimeout(() => setSuccess(""), 1000);
     } catch (err: any) {
       console.error(err);
       setError("Failed to create post. Please try again");
       setTimeout(() => setError(""), 1000);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
+      {loading && (
+        <div className="bg-yellow-100 text-yellow-700 p-3 rounded mb-4">
+          Loading...
+        </div>
+      )}
+
       {success && (
         <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
           {success}
