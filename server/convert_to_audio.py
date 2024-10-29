@@ -1,3 +1,4 @@
+from logging import exception
 import os
 from contextlib import closing
 
@@ -30,50 +31,54 @@ def create_chunks(text):
 
 
 def lambda_handler(event, context):
-    record_id = event["Records"][0]["Sns"]["Message"]
+    try:
+        record_id = event["Records"][0]["Sns"]["Message"]
 
-    print(f"handling text-to-speech for recordId: {record_id}")
+        print(f"handling text-to-speech for recordId: {record_id}")
 
-    table_name = os.environ["DB_TABLE_NAME"]
-    table = dynamodb.Table(table_name)  # type:ignore
+        table_name = os.environ["DB_TABLE_NAME"]
+        table = dynamodb.Table(table_name)  # type:ignore
 
-    item = table.query(KeyConditionExpression=Key("id").eq(record_id))
+        item = table.query(KeyConditionExpression=Key("id").eq(record_id))
 
-    text = item["Items"][0]["text"]
-    voice = item["Items"][0]["voice"]
+        text = item["Items"][0]["text"]
+        voice = item["Items"][0]["voice"]
 
-    for chunk in create_chunks(text):
-        response = polly.synthesize_speech(
-            OutputFormat="mp3",
-            Text=chunk,
-            VoiceId=voice,
+        for chunk in create_chunks(text):
+            response = polly.synthesize_speech(
+                OutputFormat="mp3",
+                Text=chunk,
+                VoiceId=voice,
+            )
+
+            if "AudioStream" in response:
+                with closing(response["AudioStream"]) as stream:
+                    output = os.path.join("/tmp/", record_id)
+                    mode = "ab" if os.path.isfile(output) else "wb"
+                    with open(output, mode) as f:
+                        f.write(stream.read())
+
+        bucket_name = os.environ["BUCKET_NAME"]
+        s3.upload_file(f"/tmp/{record_id}", bucket_name, f"{record_id}.mp3")
+
+        url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{record_id}.mp3"
+
+        table.update_item(
+            TableName=table_name,
+            Key={"id": record_id},
+            UpdateExpression="SET #statusAttr = :statusValue, #urlAttr = :urlValue",
+            ExpressionAttributeValues={":statusValue": "UPDATED", ":urlValue": url},
+            ExpressionAttributeNames={"#statusAttr": "status", "#urlAttr": "url"},
         )
 
-        if "AudioStream" in response:
-            with closing(response["AudioStream"]) as stream:
-                output = os.path.join("/tmp/", record_id)
-                mode = "ab" if os.path.isfile(output) else "wb"
-                with open(output, mode) as f:
-                    f.write(stream.read())
-
-    bucket_name = os.environ["BUCKET_NAME"]
-    s3.upload_file(f"/tmp/{record_id}", bucket_name, f"{record_id}.mp3")
-
-    url = f"https://{bucket_name}.s3.eu-central-1.amazonaws.com/{record_id}.mp3"
-
-    table.update_item(
-        TableName=table_name,
-        Key={"id": record_id},
-        UpdateExpression="SET #statusAttr = :statusValue, #urlAttr = :urlValue",
-        ExpressionAttributeValues={":statusValue": "UPDATED", ":urlValue": url},
-        ExpressionAttributeNames={"#statusAttr": "status", "#urlAttr": "url"},
-    )
-
-    return {
-        "statusCode": 200,
-        "body": {
-            "message": "Successfully converted text-to-speech",
-            "recordId": record_id,
-            "url": url,
-        },
-    }
+        return {
+            "statusCode": 200,
+            "body": {
+                "message": "Successfully converted text-to-speech",
+                "recordId": record_id,
+                "url": url,
+            },
+        }
+    except Exception as e:
+        print(e)
+        return {"statusCode": 500, "error": "InternalServerError"}
