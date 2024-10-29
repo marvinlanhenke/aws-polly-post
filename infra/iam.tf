@@ -28,3 +28,13 @@ resource "aws_iam_role_policy_attachment" "lambda_sns_policy" {
   role       = aws_iam_role.iam_for_lamba.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
 }
+
+resource "aws_iam_role_policy_attachment" "lambda_s3_policy" {
+  role       = aws_iam_role.iam_for_lamba.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_polly_policy" {
+  role       = aws_iam_role.iam_for_lamba.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
